@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bildomvandlare</title>
+
+  <style>
+    :root {
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --orange: #f97316;
+      --bg: #f3f4f6;
+      --text: #0b2a3a;
+      --muted: #6b7280;
+      --border: #d1d5db;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 1.5rem;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 0.25rem;
+    }
+
+    .lead {
+      text-align: center;
+      color: #4b5563;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background: #fff;
+      padding: 1.5rem 1.75rem;
+      border-radius: 0.9rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      margin-bottom: 1.5rem;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 999px;
+      background: var(--blue);
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .subheading {
+      margin: 1rem 0 0.25rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .field-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      font-size: 0.9rem;
+    }
+
+    input[type="file"] {
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    .help {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    .checkbox-line {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    input[type="checkbox"] {
+      transform: translateY(1px);
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+    }
+
+    .row > .col {
+      flex: 1 1 260px;
+      min-width: 0;
+    }
+
+    .status {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      min-height: 1.2rem;
+    }
+    .status--info {
+      color: #374151;
+    }
+    .status--ok {
+      color: #065f46;
+    }
+    .status--error {
+      color: #b91c1c;
+    }
+
+    .asset-list {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 0.8rem;
+    }
+
+    .asset-item {
+      background: #f9fafb;
+      border-radius: 0.75rem;
+      border: 1px solid #e5e7eb;
+      padding: 0.75rem 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .asset-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+
+    .asset-name {
+      font-weight: 600;
+    }
+
+    .asset-size-pill {
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      background: #e5e7eb;
+      font-size: 0.75rem;
+      color: #4b5563;
+    }
+
+    .asset-actions {
+      margin-top: 0.2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .asset-actions a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.3rem 0.85rem;
+      border-radius: 999px;
+      text-decoration: none;
+      background: var(--orange);
+      color: #fff;
+      font-size: 0.8rem;
+      box-shadow: 0 2px 8px rgba(249,115,22,0.4);
+      transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.2s;
+    }
+
+    .asset-actions a:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(249,115,22,0.5);
+      background: #ea580c;
+    }
+
+    /* A4-förhandsvisning */
+    .a4-preview-wrapper {
+      margin-top: 0.75rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .a4-preview {
+      width: 100%;
+      max-width: 600px;
+      aspect-ratio: 210 / 297; /* A4-förhållande */
+      background: #ffffff;
+      border-radius: 0.4rem;
+      border: 1px solid #e5e7eb;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 6px 16px rgba(15,23,42,0.08);
+    }
+
+    /* Övre biljett-del (bara som layout hint) */
+    .a4-top-divider {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    /* Lilla bildens slot (motsvarar gröna rutan i din screenshot) */
+    .preview-small-slot {
+      position: absolute;
+      left: 5%;
+      top: 10%;
+      width: 35%;
+      height: 11%;
+      background: #ecfdf5;
+      border: 2px dashed #22c55e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: #047857;
+      overflow: hidden;
+      background-position: left center;
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
+
+    /* Stora bildens slot (motsvarar lila rutan i din screenshot) */
+    .preview-large-slot {
+      position: absolute;
+      left: 5%;
+      right: 5%;
+      bottom: 5%;
+      height: 38%;
+      background: #f5f3ff;
+      border: 2px dashed #7c3aed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: #5b21b6;
+      overflow: hidden;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
+
+    canvas {
+      display: none;
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        padding: 1.2rem 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>Bildomvandlare</h1>
+    <p class="lead">
+      Ladda upp en bild och få färdiga versioner i <strong>290×113</strong> (vänster)
+      och <strong>1004×709</strong> (centrerad).  
+      Du kan använda <strong>samma bild</strong> för båda eller <strong>en unik per storlek</strong>,
+      och se dem på en A4-biljett.
+    </p>
+
+    <section class="card">
+      <h2><span class="badge">1</span> Ladda upp &amp; skapa bilder</h2>
+
+      <!-- Checkbox för läge -->
+      <div class="field-group">
+        <label class="checkbox-line">
+          <input type="checkbox" id="useGlobal" checked />
+          En bild för båda storlekarna
+        </label>
+        <div class="help">
+          Bockad = samma original används för 290×113 och 1004×709.<br>
+          Avbockad = du kan ladda upp en egen bild per storlek.
+        </div>
+      </div>
+
+      <!-- Global upload -->
+      <div id="globalUpload" class="field-group">
+        <label for="globalFile">Bild för båda</label>
+        <input type="file" id="globalFile" accept="image/*" />
+        <div class="help">
+          Helst en hyfsat högupplöst bild – den skalas in med vit bakgrund.
+        </div>
+      </div>
+
+      <!-- Individuella uploads -->
+      <div id="individualUploads" class="field-group" style="display:none;">
+        <div class="row">
+          <div class="col">
+            <label for="fileSmall">Liten bild (290×113, vänsterjusterad)</label>
+            <input type="file" id="fileSmall" class="file-input" data-key="small" accept="image/*" />
+            <div class="help">Skapar filen <code>output_290x113.jpg</code></div>
+          </div>
+          <div class="col">
+            <label for="fileLarge">Stor bild (1004×709, centrerad)</label>
+            <input type="file" id="fileLarge" class="file-input" data-key="large" accept="image/*" />
+            <div class="help">Skapar filen <code>output_1004x709.jpg</code></div>
+          </div>
+        </div>
+        <div class="help" style="margin-top:0.5rem;">
+          Så fort du väljer en fil här skapas motsvarande nedladdningslänk och preview.
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div id="status" class="status status--info"></div>
+      </div>
+
+      <div id="downloads" class="asset-list"></div>
+
+      <!-- Förhandsvisning -->
+      <div class="field-group">
+        <h3 class="subheading">Förhandsvisning på A4-biljett</h3>
+        <p class="help">
+          Den lilla bilden <strong>290×113</strong> hamnar uppe till vänster (motsvarande den gröna rutan).
+          Den stora <strong>1004×709</strong> hamnar längst ner (motsvarande den lila rutan).
+        </p>
+        <div class="a4-preview-wrapper">
+          <div class="a4-preview">
+            <div class="a4-top-divider"></div>
+            <div class="preview-small-slot" data-preview="small">
+              290×113 – förhandsvisning
+            </div>
+            <div class="preview-large-slot" data-preview="large">
+              1004×709 – förhandsvisning
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const variants = [
+      {
+        key: 'small',
+        name: 'output_290x113.jpg',
+        width: 290,
+        height: 113,
+        align: 'left'
+      },
+      {
+        key: 'large',
+        name: 'output_1004x709.jpg',
+        width: 1004,
+        height: 709,
+        align: 'center'
+      }
+    ];
+
+    const useGlobalCheckbox = document.getElementById('useGlobal');
+    const globalUpload = document.getElementById('globalUpload');
+    const individualUploads = document.getElementById('individualUploads');
+    const globalFileInput = document.getElementById('globalFile');
+    const fileInputs = document.querySelectorAll('.file-input');
+
+    const downloads = document.getElementById('downloads');
+    const statusEl = document.getElementById('status');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const smallPreviewSlot = document.querySelector('[data-preview="small"]');
+    const largePreviewSlot = document.querySelector('[data-preview="large"]');
+
+    function setStatus(message, type = 'info') {
+      statusEl.textContent = message || '';
+      statusEl.className = 'status status--' + type;
+    }
+
+    function resetPreview() {
+      smallPreviewSlot.style.backgroundImage = '';
+      largePreviewSlot.style.backgroundImage = '';
+      smallPreviewSlot.textContent = '290×113 – förhandsvisning';
+      largePreviewSlot.textContent = '1004×709 – förhandsvisning';
+    }
+
+    function updateUploadMode() {
+      const useGlobal = useGlobalCheckbox.checked;
+      globalUpload.style.display = useGlobal ? 'block' : 'none';
+      individualUploads.style.display = useGlobal ? 'none' : 'block';
+      downloads.innerHTML = '';
+      resetPreview();
+      setStatus('', 'info');
+    }
+
+    useGlobalCheckbox.addEventListener('change', updateUploadMode);
+
+    // När global bild ändras – generera båda
+    globalFileInput.addEventListener('change', () => {
+      if (!useGlobalCheckbox.checked) return;
+      buildFromGlobal();
+    });
+
+    // När någon individuell fil ändras – generera just de storlekarna
+    fileInputs.forEach(input => {
+      input.addEventListener('change', () => {
+        if (useGlobalCheckbox.checked) return;
+        buildFromIndividual();
+      });
+    });
+
+    function clearDownloads() {
+      downloads.innerHTML = '';
+    }
+
+    function buildFromGlobal() {
+      clearDownloads();
+      resetPreview();
+      const file = globalFileInput.files[0];
+      if (!file) {
+        setStatus('Välj en bild för båda storlekarna.', 'error');
+        return;
+      }
+
+      setStatus('Bearbetar bild...', 'info');
+
+      const img = new Image();
+      img.onload = () => {
+        variants.forEach(v => drawVariant(img, v));
+        setStatus('Klar! ' + variants.length + ' bilder skapade.', 'ok');
+      };
+      img.onerror = () => {
+        setStatus('Kunde inte läsa bilden. Prova en annan fil.', 'error');
+      };
+      img.src = URL.createObjectURL(file);
+    }
+
+    function buildFromIndividual() {
+      clearDownloads();
+      resetPreview();
+      let any = false;
+      let pending = 0;
+      let done = 0;
+
+      variants.forEach(v => {
+        const input = document.querySelector('.file-input[data-key="' + v.key + '"]');
+        if (input && input.files[0]) {
+          any = true;
+          pending++;
+
+          const file = input.files[0];
+          const img = new Image();
+          img.onload = () => {
+            drawVariant(img, v);
+            done++;
+            if (done === pending) {
+              setStatus('Klar! ' + done + ' bilder skapade.', 'ok');
+            }
+          };
+          img.onerror = () => {
+            done++;
+          };
+          img.src = URL.createObjectURL(file);
+        }
+      });
+
+      if (!any) {
+        setStatus('Ladda upp minst en bild i de individuella fälten.', 'error');
+      } else {
+        setStatus('Bearbetar bild(er)...', 'info');
+      }
+    }
+
+    function drawVariant(img, variant) {
+      const targetW = variant.width;
+      const targetH = variant.height;
+
+      canvas.width = targetW;
+      canvas.height = targetH;
+
+      // Vit bakgrund
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, targetW, targetH);
+
+      const scale = Math.min(targetW / img.width, targetH / img.height);
+      const newW = img.width * scale;
+      const newH = img.height * scale;
+
+      let x = 0;
+      if (variant.align === 'center') {
+        x = (targetW - newW) / 2;
+      }
+      const y = (targetH - newH) / 2;
+
+      ctx.drawImage(img, x, y, newW, newH);
+
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+      addDownloadItem(variant, dataUrl);
+      updatePreview(variant.key, dataUrl);
+    }
+
+    function addDownloadItem(variant, dataUrl) {
+      const item = document.createElement('div');
+      item.className = 'asset-item';
+
+      const header = document.createElement('div');
+      header.className = 'asset-header';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'asset-name';
+      nameSpan.textContent = variant.name;
+
+      const pill = document.createElement('span');
+      pill.className = 'asset-size-pill';
+      pill.textContent = variant.width + ' × ' + variant.height + ' px';
+
+      header.appendChild(nameSpan);
+      header.appendChild(pill);
+
+      const actions = document.createElement('div');
+      actions.className = 'asset-actions';
+
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = variant.name;
+      link.textContent = 'Ladda ner';
+
+      actions.appendChild(link);
+      item.appendChild(header);
+      item.appendChild(actions);
+
+      downloads.appendChild(item);
+    }
+
+    function updatePreview(key, dataUrl) {
+      if (key === 'small') {
+        smallPreviewSlot.style.backgroundImage = 'url(' + dataUrl + ')';
+        smallPreviewSlot.textContent = '';
+      }
+      if (key === 'large') {
+        largePreviewSlot.style.backgroundImage = 'url(' + dataUrl + ')';
+        largePreviewSlot.textContent = '';
+      }
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+      updateUploadMode();
+      setStatus('Välj bild(er) för att skapa nedladdningar och förhandsvisning.', 'info');
+    });
+  </script>
+</body>
+</html>
